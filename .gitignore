@@ -52,3 +52,5 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+.vs/eCommerce_backend/FileContentIndex/761200cb-0cd5-4a73-a0e9-b2ae54411efc.vsidx
+/.vs
