@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eCommerce_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/footwear")]
     [ApiController]
     public class FootwearController : ControllerBase
     {
@@ -16,14 +16,14 @@ namespace eCommerce_backend.Controllers
             _context = context;
         }
 
-        // GET: api/Footwear
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Footwear>>> GetFootwear() {
+        // GET: api/footwears
+        [HttpGet("getAllFootwears")]
+        public async Task<ActionResult<IEnumerable<Footwear>>> GetAllFootwears() {
             return await _context.Footwear.ToListAsync();
         }
 
-        // GET: api/Footwear/5
-        [HttpGet("{id}")]
+        // GET: api/footwear/getFootwearByID/5
+        [HttpGet("getFootwearByID/{id}")]
         public async Task<ActionResult<Footwear>> GetFootwear(int id) {
             var footwear = await _context.Footwear.FindAsync(id);
 
@@ -34,8 +34,8 @@ namespace eCommerce_backend.Controllers
             return footwear;
         }
 
-        // POST: api/Footwear
-        [HttpPost]
+        // POST: api/footwear/createFootwear
+        [HttpPost("createFootwear")]
         public async Task<ActionResult<Footwear>> PostFootwear(Footwear footwear) {
             _context.Footwear.Add(footwear);
             await _context.SaveChangesAsync();
@@ -43,8 +43,8 @@ namespace eCommerce_backend.Controllers
             return CreatedAtAction(nameof(GetFootwear), new { id = footwear.Id }, footwear);
         }
 
-        // PUT: api/Footwear/5
-        [HttpPut("{id}")]
+        // PUT: api/footwear/updateFootwear/5
+        [HttpPut("updateFootwear/{id}")]
         public async Task<IActionResult> PutFootwear(int id, Footwear footwear) {
             if (id != footwear.Id) {
                 return BadRequest();
@@ -65,8 +65,8 @@ namespace eCommerce_backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Footwear/5
-        [HttpDelete("{id}")]
+        // DELETE: api/footwear/deleteFootwear/5
+        [HttpDelete("deleteFootwear/{id}")]
         public async Task<IActionResult> DeleteFootwear(int id) {
             var footwear = await _context.Footwear.FindAsync(id);
             if (footwear == null) {
