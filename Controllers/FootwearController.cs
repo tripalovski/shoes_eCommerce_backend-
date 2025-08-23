@@ -1,4 +1,5 @@
 ﻿using eCommerce_backend.Database;
+using eCommerce_backend.DTOs;
 using eCommerce_backend.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,23 @@ namespace eCommerce_backend.Controllers
             _context = context;
         }
 
-        // GET: api/footwears
+        // GET: api/footwear/getAllFootwears
         [HttpGet("getAllFootwears")]
-        public async Task<ActionResult<IEnumerable<Footwear>>> GetAllFootwears() {
-            return await _context.Footwear.ToListAsync();
+        public async Task<ActionResult<IEnumerable<FootwearDto>>> GetAllFootwears() {
+            //return await _context.Footwear.ToListAsync();
+            return await _context.Footwear
+            .Include(f => f.Brand) // da povuče ime brenda
+            .Select(f => new FootwearDto {
+                Id = f.Id,
+                Name = f.Name,
+                Price = f.Price,
+                Color = f.Color,
+                Size = f.Size,
+                Description = f.Description,
+                ImageUrl = f.ImageUrl,
+                Brand = f.Brand != null ? f.Brand.Name : string.Empty
+            })
+            .ToListAsync();
         }
 
         // GET: api/footwear/getFootwearByID/5
@@ -79,8 +93,21 @@ namespace eCommerce_backend.Controllers
             return NoContent();
         }
 
+        [HttpGet("getBrandList")]
+        public async Task<ActionResult<IEnumerable<BrandSelectDto>>> GetBrandList() {
+            //return await _context.Footwear.ToListAsync();
+            return await _context.Brand
+            .Select(b => new BrandSelectDto {
+                Id = b.Id,
+                Name = b.Name,
+            })
+            .ToListAsync();
+        }
+
+
         private bool FootwearExists(int id) {
             return _context.Footwear.Any(e => e.Id == id);
         }
+
     }
 }

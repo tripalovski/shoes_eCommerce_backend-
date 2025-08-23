@@ -13,4 +13,10 @@
         public int Id { get; set; }
     }
 
+    public class BrandSelectDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+    }
+
 }

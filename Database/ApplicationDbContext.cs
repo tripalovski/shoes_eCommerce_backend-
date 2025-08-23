@@ -18,10 +18,6 @@ namespace eCommerce_backend.Database
                       .IsRequired()
                       .HasMaxLength(100); // Limit length of name
 
-                entity.Property(f => f.Brand)
-                      .IsRequired()
-                      .HasMaxLength(50);
-
                 entity.Property(f => f.Price)
                       .HasColumnType("decimal(18,2)"); // Precision for price
 
@@ -37,6 +33,11 @@ namespace eCommerce_backend.Database
                 entity.Property(f => f.ImageUrl)
                       .HasMaxLength(200);
 
+                entity.HasOne(f => f.Brand)
+                  .WithMany(b => b.Footwears)
+                  .HasForeignKey(f => f.BrandId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity<Models.Brand>(entity => {
                 entity.HasKey(b => b.Id); // Primary key
@@ -80,7 +81,7 @@ namespace eCommerce_backend.Database
                 new Footwear {
                     Id = 1,
                     Name = "Air Max 90",
-                    Brand = "Nike",
+                    BrandId = 1,
                     Price = 129.99m,
                     Color = "White",
                     Size = "42",
@@ -91,7 +92,7 @@ namespace eCommerce_backend.Database
                 new Footwear {
                     Id = 2,
                     Name = "Ultraboost 22",
-                    Brand = "Adidas",
+                    BrandId = 2,
                     Price = 149.99m,
                     Color = "Black",
                     Size = "43",
@@ -102,7 +103,7 @@ namespace eCommerce_backend.Database
                 new Footwear {
                     Id = 3,
                     Name = "Chuck Taylor All Star",
-                    Brand = "Converse",
+                    BrandId = 3,
                     Price = 69.99m,
                     Color = "Red",
                     Size = "41",

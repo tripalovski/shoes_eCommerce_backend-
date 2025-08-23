@@ -8,4 +8,7 @@
         public string Description { get; set; } = "";
         public string Website { get; set; } = "";
 
+        // Navigation property for related Footwear items
+        public ICollection<Footwear> Footwears { get; set; } = new List<Footwear>();
+    }
 }
