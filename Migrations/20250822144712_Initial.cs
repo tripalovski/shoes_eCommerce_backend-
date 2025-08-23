@@ -13,6 +13,22 @@ namespace eCommerce_backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Brand",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Brand", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Footwear",
                 columns: table => new
                 {
@@ -33,6 +49,16 @@ namespace eCommerce_backend.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Brand",
+                columns: new[] { "Id", "Country", "Description", "Name", "Website" },
+                values: new object[,]
+                {
+                    { 1, "USA", "Leading sportswear brand known for innovation and style.", "Nike", "https://www.nike.com" },
+                    { 2, "Germany", "Global brand offering a wide range of athletic footwear and apparel.", "Adidas", "https://www.adidas.com" },
+                    { 3, "Germany", "Renowned for its stylish and performance-oriented sportswear.", "Puma", "https://www.puma.com" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Footwear",
                 columns: new[] { "Id", "Brand", "Color", "Description", "ImageUrl", "Name", "Price", "Size", "Stock" },
                 values: new object[,]
@@ -46,6 +72,9 @@ namespace eCommerce_backend.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Brand");
+
             migrationBuilder.DropTable(
                 name: "Footwear");
         }

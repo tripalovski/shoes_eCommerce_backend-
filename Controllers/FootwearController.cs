@@ -10,9 +10,9 @@ namespace eCommerce_backend.Controllers
     [ApiController]
     public class FootwearController : ControllerBase
     {
-        private readonly FootwearDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public FootwearController(FootwearDbContext context) {
+        public FootwearController(ApplicationDbContext context) {
             _context = context;
         }
 

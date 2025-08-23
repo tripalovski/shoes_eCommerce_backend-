@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eCommerce_backend.Database
 {
-    public class FootwearDbContext (DbContextOptions<FootwearDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        // DbSet represents the Footwear table in the database
         public DbSet<Footwear> Footwear { get; set; }
+        public DbSet<Models.Brand> Brand { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             // Configure Footwear entity
@@ -35,7 +36,44 @@ namespace eCommerce_backend.Database
 
                 entity.Property(f => f.ImageUrl)
                       .HasMaxLength(200);
+
+
+            modelBuilder.Entity<Models.Brand>(entity => {
+                entity.HasKey(b => b.Id); // Primary key
+                entity.Property(b => b.Name)
+                      .IsRequired()
+                      .HasMaxLength(100); // Limit length of name
+                entity.Property(b => b.Country)
+                      .HasMaxLength(50);
+                entity.Property(b => b.Description)
+                      .HasMaxLength(500);
+                entity.Property(b => b.Website)
+                      .HasMaxLength(200);
             });
+            // Seed initial test data
+            modelBuilder.Entity<Models.Brand>().HasData(
+                new Models.Brand {
+                    Id = 1,
+                    Name = "Nike",
+                    Country = "USA",
+                    Description = "Leading sportswear brand known for innovation and style.",
+                    Website = "https://www.nike.com"
+                },
+                new Models.Brand {
+                    Id = 2,
+                    Name = "Adidas",
+                    Country = "Germany",
+                    Description = "Global brand offering a wide range of athletic footwear and apparel.",
+                    Website = "https://www.adidas.com"
+                },
+                new Models.Brand {
+                    Id = 3,
+                    Name = "Puma",
+                    Country = "Germany",
+                    Description = "Renowned for its stylish and performance-oriented sportswear.",
+                    Website = "https://www.puma.com"
+                }
+            );
 
             // Seed initial test data
             modelBuilder.Entity<Footwear>().HasData(
@@ -73,8 +111,7 @@ namespace eCommerce_backend.Database
                     ImageUrl = "https://example.com/converse-chucktaylor-red.jpg"
                 }
             );
+
         }
-
-
     }
 }

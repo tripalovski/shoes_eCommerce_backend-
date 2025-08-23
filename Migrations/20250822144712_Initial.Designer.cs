@@ -10,8 +10,8 @@ using eCommerce_backend.Database;
 
 namespace eCommerce_backend.Migrations
 {
-    [DbContext(typeof(FootwearDbContext))]
-    [Migration("20250819222351_Initial")]
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250822144712_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -23,6 +23,65 @@ namespace eCommerce_backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("eCommerce_backend.Models.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brand");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Country = "USA",
+                            Description = "Leading sportswear brand known for innovation and style.",
+                            Name = "Nike",
+                            Website = "https://www.nike.com"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Country = "Germany",
+                            Description = "Global brand offering a wide range of athletic footwear and apparel.",
+                            Name = "Adidas",
+                            Website = "https://www.adidas.com"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Country = "Germany",
+                            Description = "Renowned for its stylish and performance-oriented sportswear.",
+                            Name = "Puma",
+                            Website = "https://www.puma.com"
+                        });
+                });
 
             modelBuilder.Entity("eCommerce_backend.Models.Footwear", b =>
                 {
