@@ -7,7 +7,8 @@ namespace eCommerce_backend.Database
     {
         public DbSet<Footwear> Footwear { get; set; }
         public DbSet<Models.Brand> Brand { get; set; }
-
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             // Configure Footwear entity
@@ -51,6 +52,22 @@ namespace eCommerce_backend.Database
                 entity.Property(b => b.Website)
                       .HasMaxLength(200);
             });
+
+            // OrderItem
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => new { oi.OrderId, oi.FootwearId });
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Footwear)
+                .WithMany()
+                .HasForeignKey(oi => oi.FootwearId);
+        
+
             // Seed initial test data
             modelBuilder.Entity<Models.Brand>().HasData(
                 new Models.Brand {
