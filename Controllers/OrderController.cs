@@ -40,5 +40,31 @@ namespace eCommerce_backend.Controllers
 
             return Ok(new { orderId = newOrder.Id });
         }
+
+        //[HttpGet("{orderId}")]
+
+        [HttpGet("getAllOrders")]
+        public async Task<ActionResult<IEnumerable<OrderDisplayDto>>> GetOrders() {
+            var orders = await _context.Order
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Footwear)
+                .Select(o => new OrderDisplayDto(
+                    o.Id,
+                    o.OrderDate,
+                    o.OrderItems.Select(oi => new OrderItemDisplayDto(
+                        oi.FootwearId,
+                        oi.Footwear!.Name,
+                        oi.Footwear!.Price,
+                        oi.Quantity
+                    )).ToList()
+                ))
+                .ToListAsync();
+
+            if (orders == null || !orders.Any()) {
+                return NotFound("No orders found.");
+            }
+
+            return Ok(orders);
+        }
     }
 }
