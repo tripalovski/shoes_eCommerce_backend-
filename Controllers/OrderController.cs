@@ -1,4 +1,5 @@
-﻿using eCommerce_backend.Database;
+﻿using eCommerce_backend.Constants;
+using eCommerce_backend.Database;
 using eCommerce_backend.DTOs;
 using eCommerce_backend.Models;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ namespace eCommerce_backend.Controllers
 
             var newOrder = new Order {
                 OrderDate = DateTime.UtcNow,
+                OrderStatus = OrderStatus.Pending,
                 OrderItems = new List<OrderItem>()
             };
 
@@ -51,6 +53,7 @@ namespace eCommerce_backend.Controllers
                 .Select(o => new OrderDisplayDto(
                     o.Id,
                     o.OrderDate,
+                    o.OrderStatus,
                     o.OrderItems.Select(oi => new OrderItemDisplayDto(
                         oi.FootwearId,
                         oi.Footwear!.Name,

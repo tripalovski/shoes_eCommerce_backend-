@@ -1,4 +1,6 @@
-﻿namespace eCommerce_backend.DTOs
+﻿using eCommerce_backend.Constants;
+
+namespace eCommerce_backend.DTOs
 {
     public record OrderItemDto(int FootwearId, int Quantity);
 
@@ -11,6 +13,11 @@
         int Quantity
     );
 
-    public record OrderDisplayDto(int Id, DateTime OrderDate, ICollection<OrderItemDisplayDto> Items);
+    public record OrderDisplayDto(
+        int Id, 
+        DateTime OrderDate, 
+        OrderStatus OrderStatus,
 
+        ICollection<OrderItemDisplayDto> Items
+    );
 }
