@@ -15,9 +15,14 @@ namespace eCommerce_backend.DTOs
 
     public record OrderDisplayDto(
         int Id, 
-        DateTime OrderDate, 
-        OrderStatus OrderStatus,
+        DateTime CreatedAtDate, 
+        OrderStatus Status,
 
         ICollection<OrderItemDisplayDto> Items
+    );
+
+    public record OrderStatusUpdateDto(
+        int Id,
+        OrderStatus Status
     );
 }

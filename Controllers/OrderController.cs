@@ -25,8 +25,8 @@ namespace eCommerce_backend.Controllers
             }
 
             var newOrder = new Order {
-                OrderDate = DateTime.UtcNow,
-                OrderStatus = OrderStatus.Pending,
+                CreatedAtDate = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
                 OrderItems = new List<OrderItem>()
             };
 
@@ -43,8 +43,6 @@ namespace eCommerce_backend.Controllers
             return Ok(new { orderId = newOrder.Id });
         }
 
-        //[HttpGet("{orderId}")]
-
         [HttpGet("getAllOrders")]
         public async Task<ActionResult<IEnumerable<OrderDisplayDto>>> GetOrders() {
             var orders = await _context.Order
@@ -52,8 +50,8 @@ namespace eCommerce_backend.Controllers
                 .ThenInclude(oi => oi.Footwear)
                 .Select(o => new OrderDisplayDto(
                     o.Id,
-                    o.OrderDate,
-                    o.OrderStatus,
+                    o.CreatedAtDate,
+                    o.Status,
                     o.OrderItems.Select(oi => new OrderItemDisplayDto(
                         oi.FootwearId,
                         oi.Footwear!.Name,
@@ -68,6 +66,32 @@ namespace eCommerce_backend.Controllers
             }
 
             return Ok(orders);
+        }
+
+        [HttpPatch("updateStatus/{orderId}")]
+        public async Task<IActionResult> MarkOrderCompleted(int orderId, OrderStatusUpdateDto statusUpdateDto) {
+            var order = await _context.Order.FindAsync(orderId);
+            if (order == null) {
+                return NotFound("Order not found.");
+            }
+
+            order.Status = statusUpdateDto.Status;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("deleteOrder/{orderId}")]
+        public async Task<IActionResult> DeleteOrder(int orderId) {
+            var order = await _context.Order
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+            if (order == null) {
+                return NotFound("Order not found.");
+            }
+            _context.OrderItem.RemoveRange(order.OrderItems);
+            _context.Order.Remove(order);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
