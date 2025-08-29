@@ -64,7 +64,7 @@ namespace eCommerce_backend.Database
 
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Footwear)
-                .WithMany()
+                .WithMany(f => f.OrderItems)
                 .HasForeignKey(oi => oi.FootwearId);
         
 

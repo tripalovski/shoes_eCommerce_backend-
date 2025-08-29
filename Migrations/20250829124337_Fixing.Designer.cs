@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerce_backend.Database;
 
@@ -11,9 +12,11 @@ using eCommerce_backend.Database;
 namespace eCommerce_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250829124337_Fixing")]
+    partial class Fixing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,12 +198,17 @@ namespace eCommerce_backend.Migrations
                     b.Property<int>("FootwearId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FootwearId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("OrderId", "FootwearId");
 
                     b.HasIndex("FootwearId");
+
+                    b.HasIndex("FootwearId1");
 
                     b.ToTable("OrderItem");
                 });
@@ -219,10 +227,14 @@ namespace eCommerce_backend.Migrations
             modelBuilder.Entity("eCommerce_backend.Models.OrderItem", b =>
                 {
                     b.HasOne("eCommerce_backend.Models.Footwear", "Footwear")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("FootwearId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("eCommerce_backend.Models.Footwear", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("FootwearId1");
 
                     b.HasOne("eCommerce_backend.Models.Order", "Order")
                         .WithMany("OrderItems")

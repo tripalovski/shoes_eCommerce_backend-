@@ -20,9 +20,8 @@ namespace eCommerce_backend.Controllers
         // GET: api/footwear/getAllFootwears
         [HttpGet("getAllFootwears")]
         public async Task<ActionResult<IEnumerable<FootwearDto>>> GetAllFootwears() {
-            //return await _context.Footwear.ToListAsync();
             return await _context.Footwear
-            .Include(f => f.Brand) // da povuče ime brenda
+            .Include(f => f.Brand)
             .Select(f => new FootwearDto {
                 Id = f.Id,
                 Name = f.Name,
@@ -82,11 +81,15 @@ namespace eCommerce_backend.Controllers
         // DELETE: api/footwear/deleteFootwear/5
         [HttpDelete("deleteFootwear/{id}")]
         public async Task<IActionResult> DeleteFootwear(int id) {
-            var footwear = await _context.Footwear.FindAsync(id);
+            var footwear = await _context.Footwear
+                .Include(f => f.OrderItems)
+                .FirstOrDefaultAsync(f => f.Id == id);
             if (footwear == null) {
                 return NotFound();
             }
 
+            // First remove associated OrderItems
+            _context.OrderItem.RemoveRange(footwear.OrderItems);
             _context.Footwear.Remove(footwear);
             await _context.SaveChangesAsync();
 

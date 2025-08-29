@@ -88,8 +88,21 @@ namespace eCommerce_backend.Controllers
             if (order == null) {
                 return NotFound("Order not found.");
             }
+            // First remove associated order items
             _context.OrderItem.RemoveRange(order.OrderItems);
             _context.Order.Remove(order);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("deleteItem/{orderId}/{footwearId}")]
+        public async Task<IActionResult> RemoveItemFromOrder(int orderId, int footwearId) {
+            var orderItem = await _context.OrderItem
+                .FirstOrDefaultAsync(oi => oi.OrderId == orderId && oi.FootwearId == footwearId);
+            if (orderItem == null) {
+                return NotFound("Order not found.");
+            }
+            _context.OrderItem.Remove(orderItem);
             await _context.SaveChangesAsync();
             return NoContent();
         }
