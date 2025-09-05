@@ -9,6 +9,7 @@ namespace eCommerce_backend.Database
         public DbSet<Models.Brand> Brand { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderItem> OrderItem { get; set; }
+        public DbSet<User> User { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             // Configure Footwear entity
@@ -66,7 +67,25 @@ namespace eCommerce_backend.Database
                 .HasOne(oi => oi.Footwear)
                 .WithMany(f => f.OrderItems)
                 .HasForeignKey(oi => oi.FootwearId);
-        
+
+            modelBuilder.Entity<User>(entity => {
+                entity.HasKey(u => u.Id); // Primary key
+                entity.Property(u => u.Email)
+                      .IsRequired()
+                      .HasMaxLength(100);
+                entity.HasIndex(u => u.Email)
+                      .IsUnique();               
+                entity.Property(u => u.PasswordHash)
+                      .IsRequired()
+                      .HasMaxLength(100);
+                entity.Property(u => u.FirstName)
+                      .HasMaxLength(50);
+                entity.Property(u => u.LastName)
+                      .HasMaxLength(50);
+                entity.Property(u => u.CreatedAt)
+                      .HasDefaultValueSql("GETDATE()");
+            });
+
 
             // Seed initial test data
             modelBuilder.Entity<Models.Brand>().HasData(
