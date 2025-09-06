@@ -7,11 +7,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 // Define a CORS policy name
 string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 // Add CORS services and define the policy
 builder.Services.AddCors(options =>
 {

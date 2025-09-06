@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace eCommerce_backend.Controllers
 {
@@ -25,9 +26,9 @@ namespace eCommerce_backend.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterUserDto userDto)
+        public async Task<ActionResult<TokenResponseDto>> Register(RegisterUserDto userDto)
         {
-            var existingUser = _context.User.FirstOrDefault(u => u.Email == userDto.Email);
+            var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Email == userDto.Email);
             if (existingUser != null)
             {
                 return BadRequest("User with this email already exists");
@@ -42,32 +43,41 @@ namespace eCommerce_backend.Controllers
             };
 
             _context.Add(newUser);
-            _context.SaveChanges();
-            return Ok(new { userId = newUser.Id });
+            await _context.SaveChangesAsync();
+
+            var token = CreateToken(newUser);
+            return new TokenResponseDto { AccessToken = token };
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginUserDto loginUserDto)
-        {
-            var user = _context.User.FirstOrDefault(u => u.Email == loginUserDto.Email);
-            if (user == null)
-            {
+        public async Task<ActionResult<TokenResponseDto>> Login(LoginUserDto loginUserDto) {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Email == loginUserDto.Email);
+            if (user == null) {
                 return Unauthorized("Invalid email or password");
             }
-            if(!BCrypt.Net.BCrypt.Verify(loginUserDto.Password, user.PasswordHash))
-            {
+            if (!BCrypt.Net.BCrypt.Verify(loginUserDto.Password, user.PasswordHash)) {
                 return Unauthorized("Invalid email or password");
             }
+            var token = CreateToken(user);
+            return new TokenResponseDto { AccessToken = token };
+        }
 
-            string token = CreateToken(user);
-
-            return Ok(token);
+        [Authorize(Roles = "Admin")]
+        [HttpPost("getAllUsers")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers() {
+            return await _context.User
+                .Select(u => new UserDto {
+                    Email = u.Email,
+                    FirstName = u.LastName,
+                    LastName = u.LastName,
+                    CreatedAt = u.CreatedAt
+                }).ToListAsync();
         }
 
         private string CreateToken(User user) {
             var claims = new List<Claim> {
-                new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
@@ -83,18 +93,6 @@ namespace eCommerce_backend.Controllers
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-        }
-
-        [Authorize]
-        [HttpPost("getAllUsers")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers() {
-            return await _context.User
-                .Select(u => new UserDto {
-                    Email = u.Email,
-                    FirstName = u.LastName,
-                    LastName = u.LastName,
-                    CreatedAt = u.CreatedAt
-                }).ToListAsync();
         }
     }
 }

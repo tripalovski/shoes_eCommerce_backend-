@@ -1,6 +1,8 @@
-﻿using eCommerce_backend.Database;
+﻿using eCommerce_backend.Constants;
+using eCommerce_backend.Database;
 using eCommerce_backend.DTOs;
 using eCommerce_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // POST: api/footwear/createFootwear
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPost("createFootwear")]
         public async Task<ActionResult<Footwear>> PostFootwear(Footwear footwear) {
             _context.Footwear.Add(footwear);

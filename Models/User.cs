@@ -1,4 +1,6 @@
-﻿namespace eCommerce_backend.Models
+﻿using eCommerce_backend.Constants;
+
+namespace eCommerce_backend.Models
 {
     public class User
     {
@@ -8,5 +10,7 @@
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public DateTime CreatedAt { get; set; }
+        public Role Role { get; set; } = Role.User;
+
     }
 }
