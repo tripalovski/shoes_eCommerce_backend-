@@ -120,7 +120,7 @@ namespace eCommerce_backend.Controllers
             return NoContent();
         }
 
-        Authorize(Roles = nameof(Role.Admin))]
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteOrder/{orderId}")]
         public async Task<IActionResult> DeleteOrder(int orderId) {
             var order = await _context.Order
@@ -139,12 +139,21 @@ namespace eCommerce_backend.Controllers
         [Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteItem/{orderId}/{footwearId}")]
         public async Task<IActionResult> RemoveItemFromOrder(int orderId, int footwearId) {
-            var orderItem = await _context.OrderItem
-                .FirstOrDefaultAsync(oi => oi.OrderId == orderId && oi.FootwearId == footwearId);
-            if (orderItem == null) {
-                return NotFound("Order not found.");
+            var order = await _context.Order
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+            var orderItem = order?.OrderItems.FirstOrDefault(oi => oi.FootwearId == footwearId);
+
+            if(orderItem == null) {
+                return NotFound("Order item not found.");
             }
+
             _context.OrderItem.Remove(orderItem);
+            if (order?.OrderItems.Count == 1) {
+                // If it was the last item, remove the order as well
+                _context.Order.Remove(order);
+            }
+
             await _context.SaveChangesAsync();
             return NoContent();
         }
