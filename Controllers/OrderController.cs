@@ -2,9 +2,12 @@
 using eCommerce_backend.Database;
 using eCommerce_backend.DTOs;
 using eCommerce_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using System.Security.Claims;
 
 namespace eCommerce_backend.Controllers
 {
@@ -18,15 +21,21 @@ namespace eCommerce_backend.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = nameof(Role.User))]
         [HttpPost("createOrder")]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderDto orderDto) {
             if (orderDto == null || orderDto.Items.Count == 0) {
                 return BadRequest("Order cannot be empty.");
             }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) {
+                return Unauthorized("User ID not found in token.");
+            }
 
             var newOrder = new Order {
                 CreatedAtDate = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
+                UserId = int.Parse(userId),
                 OrderItems = new List<OrderItem>()
             };
 
@@ -65,6 +74,35 @@ namespace eCommerce_backend.Controllers
                 return NotFound("No orders found.");
             }
 
+            return Ok(orders);
+        }
+
+        [Authorize(Roles = nameof(Role.User))]
+        [HttpGet("getUserOrders")]
+        public async Task<ActionResult<IEnumerable<OrderDisplayDto>>> GetUserOrders() {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) {
+                return Unauthorized("User ID not found in token.");
+            }
+            var orders = await _context.Order
+                .Where(o => o.UserId == int.Parse(userId))
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Footwear)
+                .Select(o => new OrderDisplayDto(
+                    o.Id,
+                    o.CreatedAtDate,
+                    o.Status,
+                    o.OrderItems.Select(oi => new OrderItemDisplayDto(
+                        oi.FootwearId,
+                        oi.Footwear!.Name,
+                        oi.Footwear!.Price,
+                        oi.Quantity
+                    )).ToList()
+                ))
+                .ToListAsync();
+            if (orders == null || !orders.Any()) {
+                return NotFound("No orders found for this user.");
+            }
             return Ok(orders);
         }
 

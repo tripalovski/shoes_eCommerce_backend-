@@ -12,5 +12,7 @@ namespace eCommerce_backend.Models
         public DateTime CreatedAt { get; set; }
         public Role Role { get; set; } = Role.User;
 
+        // navigation property for related Orders
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

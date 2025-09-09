@@ -12,8 +12,8 @@ using eCommerce_backend.Database;
 namespace eCommerce_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250828130541_RenamedOrderDateCollumn")]
-    partial class RenamedOrderDateCollumn
+    [Migration("20250907183635_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,7 +185,12 @@ namespace eCommerce_backend.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Order");
                 });
@@ -208,6 +213,50 @@ namespace eCommerce_backend.Migrations
                     b.ToTable("OrderItem");
                 });
 
+            modelBuilder.Entity("eCommerce_backend.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("eCommerce_backend.Models.Footwear", b =>
                 {
                     b.HasOne("eCommerce_backend.Models.Brand", "Brand")
@@ -219,10 +268,21 @@ namespace eCommerce_backend.Migrations
                     b.Navigation("Brand");
                 });
 
+            modelBuilder.Entity("eCommerce_backend.Models.Order", b =>
+                {
+                    b.HasOne("eCommerce_backend.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("eCommerce_backend.Models.OrderItem", b =>
                 {
                     b.HasOne("eCommerce_backend.Models.Footwear", "Footwear")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("FootwearId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -243,9 +303,19 @@ namespace eCommerce_backend.Migrations
                     b.Navigation("Footwears");
                 });
 
+            modelBuilder.Entity("eCommerce_backend.Models.Footwear", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("eCommerce_backend.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("eCommerce_backend.Models.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

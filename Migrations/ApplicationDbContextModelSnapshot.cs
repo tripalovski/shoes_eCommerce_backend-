@@ -52,7 +52,7 @@ namespace eCommerce_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand", (string)null);
+                    b.ToTable("Brand");
 
                     b.HasData(
                         new
@@ -127,7 +127,7 @@ namespace eCommerce_backend.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("Footwear", (string)null);
+                    b.ToTable("Footwear");
 
                     b.HasData(
                         new
@@ -182,9 +182,14 @@ namespace eCommerce_backend.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Order", (string)null);
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("eCommerce_backend.Models.OrderItem", b =>
@@ -202,7 +207,7 @@ namespace eCommerce_backend.Migrations
 
                     b.HasIndex("FootwearId");
 
-                    b.ToTable("OrderItem", (string)null);
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("eCommerce_backend.Models.User", b =>
@@ -246,7 +251,7 @@ namespace eCommerce_backend.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("eCommerce_backend.Models.Footwear", b =>
@@ -258,6 +263,17 @@ namespace eCommerce_backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Brand");
+                });
+
+            modelBuilder.Entity("eCommerce_backend.Models.Order", b =>
+                {
+                    b.HasOne("eCommerce_backend.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("eCommerce_backend.Models.OrderItem", b =>
@@ -292,6 +308,11 @@ namespace eCommerce_backend.Migrations
             modelBuilder.Entity("eCommerce_backend.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("eCommerce_backend.Models.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }
