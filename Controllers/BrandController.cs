@@ -1,6 +1,8 @@
-﻿using eCommerce_backend.Database;
+﻿using eCommerce_backend.Constants;
+using eCommerce_backend.Database;
 using eCommerce_backend.DTOs;
 using eCommerce_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +51,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // POST: api/brand/createBrand
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPost("createBrand")]
         public async Task<ActionResult<BrandDto>> CreateBrand(CreateBrandDto dto) {
             var brand = new Brand {
@@ -71,6 +74,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // PUT: api/brand/updateBrand/5
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPut("updateBrand/{id}")]
         public async Task<IActionResult> UpdateBrand(int id, CreateBrandDto dto) {
             var brand = await _context.Brand.FindAsync(id);
@@ -86,6 +90,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // DELETE: api/brand/deleteBrand/5
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteBrand/{id}")]
         public async Task<IActionResult> DeleteBrand(int id) {
             var brand = await _context.Brand.FindAsync(id);

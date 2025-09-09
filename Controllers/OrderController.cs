@@ -52,6 +52,7 @@ namespace eCommerce_backend.Controllers
             return Ok(new { orderId = newOrder.Id });
         }
 
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpGet("getAllOrders")]
         public async Task<ActionResult<IEnumerable<OrderDisplayDto>>> GetOrders() {
             var orders = await _context.Order
@@ -106,6 +107,7 @@ namespace eCommerce_backend.Controllers
             return Ok(orders);
         }
 
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPatch("updateStatus/{orderId}")]
         public async Task<IActionResult> MarkOrderCompleted(int orderId, OrderStatusUpdateDto statusUpdateDto) {
             var order = await _context.Order.FindAsync(orderId);
@@ -118,6 +120,7 @@ namespace eCommerce_backend.Controllers
             return NoContent();
         }
 
+        Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteOrder/{orderId}")]
         public async Task<IActionResult> DeleteOrder(int orderId) {
             var order = await _context.Order
@@ -133,6 +136,7 @@ namespace eCommerce_backend.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteItem/{orderId}/{footwearId}")]
         public async Task<IActionResult> RemoveItemFromOrder(int orderId, int footwearId) {
             var orderItem = await _context.OrderItem

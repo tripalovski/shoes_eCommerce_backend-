@@ -62,7 +62,7 @@ namespace eCommerce_backend.Controllers
             return new TokenResponseDto { AccessToken = token };
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPost("getAllUsers")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers() {
             return await _context.User

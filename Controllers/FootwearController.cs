@@ -72,6 +72,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // PUT: api/footwear/updateFootwear/5
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpPut("updateFootwear/{id}")]
         public async Task<IActionResult> PutFootwear(int id, Footwear footwear) {
             if (id != footwear.Id) {
@@ -94,6 +95,7 @@ namespace eCommerce_backend.Controllers
         }
 
         // DELETE: api/footwear/deleteFootwear/5
+        [Authorize(Roles = nameof(Role.Admin))]
         [HttpDelete("deleteFootwear/{id}")]
         public async Task<IActionResult> DeleteFootwear(int id) {
             var footwear = await _context.Footwear
